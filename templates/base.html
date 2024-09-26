@@ -1,0 +1,30 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <title>
+        {% block title %}
+            Tienda Comunitaria Diconsa
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+{% endblock %}
+
+{% block body %}
+    {% block navbar %}
+        {% include 'navbar.html' %}
+    {% endblock %}
+
+    {% block content %}
+    <div class="container">
+        <div class="content-box">
+            <div class="info-box">
+                <img src="../static/assets/mya.gif" alt="icono" class="icon">
+                <h1>Bienvenido: {{ session.username }}</h1>
+                <h1>Rol: {{ session.role }}</h1>
+                <p>¡Bienvenido disfruta tu estancia!</p>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+{% endblock %}

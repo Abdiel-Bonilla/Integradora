@@ -1,0 +1,166 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <title>
+        {% block title %}
+        Diconsa Web App - Editar usuario
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="../static/style.css">
+    <style>
+        /* Estilo general del cuerpo */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        /* Fondo de la ventana emergente */
+        .modal {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Contenido de la ventana emergente */
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Botón de cerrar la ventana emergente */
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .modal-close:hover {
+            color: #000;
+        }
+
+        /* Estilo del mensaje dentro de la ventana emergente */
+        .modal-body {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* Estilo del pie de página de la ventana emergente */
+        .modal-footer {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .modal-footer button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin: 0 5px;
+        }
+
+        .modal-footer button:hover {
+            background-color: #0056b3;
+        }
+
+        .modal-footer .cancel-btn {
+            background-color: #dc3545;
+        }
+
+        .modal-footer .cancel-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {% block navbar %}
+        {% include 'navbar.html' %}
+    {% endblock %}
+
+    {% block content %}
+        <div class="container-fluid">
+            <h2>Edición de Usuarios</h2><br>
+            <form id="editForm" action="{{ url_for('update2_usuarios', id_usuario=datos[0][0]) }}" method="post" class="edit-form">
+                {% for usuario in datos %}
+                    <input type="hidden" name="id" value="{{ usuario[0] }}">
+                    <div class="form-group">
+                        <label for="nombre">Nombre del usuario</label>
+                        <input type="text" name="nombre" value="{{ usuario[1] }}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido-pat">Apellido paterno</label>
+                        <input type="text" name="apellido-pat" value="{{ usuario[2] }}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido-mat">Apellido materno</label>
+                        <input type="text" name="apellido-mat" value="{{ usuario[3] }}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo">Tipo</label>
+                        <select name="tipo" class="form-control">
+                            <option value="admin" {% if usuario[4] == 'admin' %} selected {% endif %}>Administrador</option>
+                            <option value="cashier" {% if usuario[4] == 'cashier' %} selected {% endif %}>Cajero</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="contrasena">Contraseña</label>
+                        <input type="text" name="contrasena" value="{{ usuario[] }}********" class="form-control">
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn-update" onclick="showModal()">Actualizar</button>
+                        <a href="{{ url_for('usuarios') }}" class="btn-cancel">Cancelar</a>
+                    </div>
+                {% endfor %}
+            </form>
+        </div>
+
+        <!-- Ventana Emergente -->
+        <div id="confirmationModal" class="modal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <div class="modal-body">
+                    <h2>Confirmación</h2>
+                    <p>¿Estás seguro de que deseas actualizar estos datos?</p>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="confirmEdit()">Confirmar</button>
+                    <button class="cancel-btn" onclick="closeModal()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+    <script>
+        function showModal() {
+            document.getElementById('confirmationModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('confirmationModal').style.display = 'none';
+        }
+
+        function confirmEdit() {
+            document.getElementById('editForm').submit();
+        }
+    </script>
+{% endblock %}

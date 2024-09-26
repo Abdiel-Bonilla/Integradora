@@ -1,0 +1,27 @@
+{% extends "bootstrap/base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="../static/style.css">
+<div class="container">
+    <div class="custom-login-form-container">
+        <h2 class="custom-login-title">
+            <img src="{{ url_for('static', filename='assets/usuario.png') }}" alt="Usuario" class="custom-login-icon">
+            Iniciar Sesión
+        </h2>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="custom-login-form-group">
+                {{ form.username.label(class="custom-login-form-label") }}
+                {{ form.username(class="custom-login-form-control") }}
+            </div>
+            <div class="custom-login-form-group">
+                {{ form.password.label(class="custom-login-form-label") }}
+                {{ form.password(class="custom-login-form-control") }}
+            </div>
+            <div class="custom-login-form-group">
+                {{ form.submit(class="custom-login-btn-submit") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

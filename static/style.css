@@ -1,0 +1,350 @@
+body {
+    background-image: url('../static/assets/fondo.jpg'); /* Ruta a tu imagen de fondo */
+    background-size: cover; /* Ajusta el tamaño de la imagen para cubrir el contenedor */
+    background-position: center; /* Centra la imagen de fondo */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+}
+
+/* Estilo para la barra de navegación */
+.mi-nav {
+    font-size: 22px; /* Tamaño de fuente principal */
+    background-color: #007bff; /* Azul primario */
+    position: relative; /* Asegura que los elementos hijos se posicionen en relación con la barra de navegación */
+}
+
+.navbar-nav .nav-link {
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 20px;
+    margin-top: 10px;
+    color: white; /* Color del texto */
+}
+
+.mi-nav .navbar-brand,
+.mi-nav .nav-link {
+    color: white; /* Color del texto */
+}
+
+.mi-nav .nav-link:hover {
+    color: #e0e0e0; /* Color claro al pasar el ratón */
+    background-color: #0056b3; /* Fondo azul más oscuro al hover */
+}
+
+/* Posiciona el bloque de saludo en la esquina superior derecha */
+.position-absolute {
+    position: absolute;
+}
+
+.top-0 {
+    top: 0; /* Alinea en la parte superior */
+}
+
+.end-0 {
+    right: 0; /* Alinea a la derecha */
+}
+
+.p-3 {
+    padding: 0.75rem; /* Ajusta el padding según sea necesario */
+}
+
+/* Ajusta el tamaño de la fuente para el bloque de saludo */
+.navbar-text.custom-username {
+    color: white; /* Color del texto */
+    font-size: 16px; /* Tamaño de fuente más pequeño */
+}
+/* Posiciona el bloque de saludo en la esquina superior derecha */
+.position-absolute {
+    position: absolute;
+}
+
+.top-0 {
+    top: 0; /* Alinea en la parte superior */
+}
+
+.end-0 {
+    right: 0; /* Alinea a la derecha */
+}
+
+.p-3 {
+    padding: 0.75rem; /* Ajusta el padding según sea necesario */
+}
+
+.navbar-text.custom-username {
+    color: white; /* Color del texto */
+}
+
+
+.position-absolute {
+    position: absolute;
+    right: 0;
+}
+
+/* Estilo para el contenedor del formulario de inicio de sesión */
+.form-container {
+    max-width: 400px; /* Ancho máximo del contenedor */
+    margin: auto; /* Centra el contenedor horizontalmente */
+    border: 1px solid #ddd; /* Borde suave */
+    border-radius: 12px; /* Bordes redondeados */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra ligera para profundidad */
+    background-color: #ffffff; /* Fondo blanco */
+    text-align: center; /* Centra el texto dentro del contenedor */
+    padding: 2rem; /* Espacio interno */
+}
+
+/* Estilo para el título en el formulario de inicio de sesión */
+h2 {
+    color: #007bff; /* Azul primario */
+    font-size: 2rem; /* Tamaño de fuente aumentado */
+    margin-bottom: 1rem; /* Espacio debajo del título */
+    text-align: center; /* Asegura que el texto del título esté centrado */
+    background-color: white; /* Fondo blanco */
+    padding: 10px; /* Espacio interno alrededor del texto */
+    border-radius: 5px; /* Esquinas redondeadas */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Sombra ligera para resaltar el título */
+}
+
+/* Estilo para los campos del formulario */
+.form-control {
+    border-radius: 5px; /* Bordes redondeados para los campos de entrada */
+    border: 1px solid #ccc; /* Borde suave */
+    padding: 0.75rem; /* Espacio interno */
+    margin-bottom: 1rem; /* Espacio debajo de cada campo de entrada */
+}
+
+/* Estilo para el botón de envío del formulario */
+.btn-primary {
+    background-color: #007bff; /* Azul primario */
+    color: white; /* Color del texto del botón */
+    border: none; /* Sin borde */
+    padding: 0.75rem; /* Espacio interno */
+    border-radius: 5px; /* Bordes redondeados */
+    width: 100%; /* Botón ocupa todo el ancho del contenedor */
+    font-size: 16px; /* Tamaño de fuente del botón */
+    cursor: pointer; /* Cursor de mano para interacción */
+    transition: background-color 0.3s; /* Transición suave para el color de fondo */
+    margin-top: 10px; /* Espacio superior entre el botón y el contenido */
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Azul más oscuro al hover */
+}
+
+/* Estilo para el formulario de búsqueda */
+.search-form {
+    margin-bottom: 15px;
+    float: right; /* Alinear a la derecha */
+}
+
+.search-form input {
+    background-color: #007bff; /* Azul primario */
+    color: white; /* Texto blanco */
+}
+
+.search-form button {
+    background-color: #0056b3; /* Azul oscuro */
+    color: white; /* Texto blanco */
+}
+
+.table {
+    background-color: #ffffff; /* Fondo azul claro */
+}
+
+.table th {
+    background-color: #007bff; /* Encabezados en azul primario */
+    color: white; /* Color del texto */
+}
+
+.table th, .table td {
+    border: 1px solid rgba(0, 0, 0, 0.2); /* Bordes sutiles pero más visibles */
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 123, 255, 0.2); /* Filas alternas más oscuras */
+}
+
+.table-striped tbody tr:hover {
+    background-color: rgba(0, 85, 255, 0.7); /* Color más fuerte al pasar el ratón */
+}
+
+/* Estilo para los botones de editar y eliminar */
+.btn-edit {
+    background-color: #007bff; /* Azul primario */
+    color: white; /* Color del texto */
+    border: none; /* Sin borde */
+}
+
+.btn-edit:hover {
+    background-color: #0056b3; /* Azul más oscuro al hover */
+}
+
+.btn-delete {
+    background-color: #dc3545; /* Rojo */
+    color: white; /* Color del texto */
+    border: none; /* Sin borde */
+}
+
+.btn-delete:hover {
+    background-color: #c82333; /* Rojo más oscuro al hover */
+}
+
+/* Estilo específico para los botones de "Actualizar" y "Cancelar" en las páginas de edición */
+.edit-form {
+    max-width: 600px; /* Ancho máximo del formulario */
+    margin: 0 auto; /* Centra el formulario horizontalmente */
+    padding: 20px; /* Añade un poco de espacio interno */
+    background-color: #fff; /* Fondo blanco para el formulario */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra sutil para el formulario */
+}
+
+.form-group {
+    margin-bottom: 15px; /* Espacio entre los campos del formulario */
+}
+
+.btn-update {
+    width: 100%; /* Botón ocupa todo el ancho disponible */
+    margin-top: 10px; /* Espacio superior entre los botones */
+    padding: 10px; /* Espacio interno en el botón */
+    font-size: 16px; /* Tamaño de fuente */
+    border: none; /* Sin borde */
+    border-radius: 4px; /* Bordes redondeados */
+    background-color: #007bff; /* Azul primario */
+    color: white; /* Color del texto */
+}
+
+.btn-update:hover {
+    background-color: #0056b3; /* Azul más oscuro al hover */
+}
+
+.btn-cancel {
+    width: 100%; /* Botón ocupa todo el ancho disponible */
+    margin-top: 10px; /* Espacio superior entre los botones */
+    padding: 10px; /* Espacio interno en el botón */
+    font-size: 16px; /* Tamaño de fuente */
+    border: none; /* Sin borde */
+    border-radius: 4px; /* Bordes redondeados */
+    background-color: #dc3545; /* Rojo */
+    color: white; /* Color del texto */
+}
+
+.btn-cancel:hover {
+    background-color: #c82333; /* Rojo más oscuro al hover */
+}
+
+/* Botón de registrar nuevo usuario */
+.btn-register-small {
+    font-size: 12px; /* Tamaño de fuente más pequeño */
+    padding: 5px 10px; /* Espacio interno más pequeño */
+    background-color: #007bff; /* Azul primario */
+    color: white; /* Color del texto */
+    border: none; /* Sin borde */
+    border-radius: 4px; /* Bordes redondeados */
+}
+
+.btn-register-small:hover {
+    background-color: #0056b3; /* Azul más oscuro al hover */
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px; /* Espacio entre los botones */
+    justify-content: center; /* Centra los botones */
+    margin-top: 20px; /* Espacio superior entre el formulario y los botones */
+}
+
+/* Estilo para el contenedor del contenido */
+.content-box {
+    max-width: 400px; /* Ancho máximo del cuadro */
+    margin: 20px auto; /* Centra el cuadro horizontalmente con margen superior e inferior */
+    padding: 20px; /* Espacio interno */
+    border: 1px solid #ddd; /* Borde sutil */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra ligera para profundidad */
+    background-color: #ffffff; /* Fondo blanco */
+}
+
+/* Estilo para la caja de información */
+.info-box {
+    text-align: center; /* Centra el texto dentro de la caja de información */
+}
+
+/* Estilo para las imágenes dentro de la caja */
+.info-box .icon {
+    width: 100px; /* Ajusta el tamaño de la imagen según sea necesario */
+    height: auto; /* Mantiene la proporción de la imagen */
+    margin-bottom: 20px; /* Espacio debajo de la imagen */
+}
+
+.mi-ul{
+    list-style: none;
+}
+
+
+
+
+
+/* Estilo para el contenedor del formulario de inicio de sesión */
+.custom-login-form-container {
+    max-width: 400px;
+    margin: 20vh auto;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #007bff; /* Fondo azul */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Estilo para el título en el formulario de inicio de sesión */
+.custom-login-title {
+    color: #007bff;
+    font-size: 1.8rem; /* Tamaño de fuente más grande */
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Estilo para la imagen de usuario */
+.custom-login-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+}
+
+/* Estilo para los grupos de formulario */
+.custom-login-form-group {
+    margin-bottom: 15px;
+}
+
+/* Estilo para las etiquetas de formulario */
+.custom-login-form-label {
+    color: white; /* Texto blanco */
+    display: block;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+/* Estilo para los campos de entrada del formulario */
+.custom-login-form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+/* Estilo para el botón de envío */
+.custom-login-btn-submit {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: white;
+    color: #007bff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.custom-login-btn-submit:hover {
+    background-color: #e0e0e0; /* Color claro al pasar el ratón */
+}

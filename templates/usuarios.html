@@ -1,0 +1,179 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <title>
+        {% block title %}
+        Diconsa Web App Usuarios
+        {% endblock %}
+    </title>
+    <link rel="stylesheet" href="../static/style.css">
+    <style>
+        /* Estilo para el modal */
+        .modal {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .modal-close:hover {
+            color: #000;
+        }
+
+        .modal-body {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .modal-footer button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin: 0 5px;
+        }
+
+        .modal-footer button:hover {
+            background-color: #0056b3;
+        }
+
+        .modal-footer .cancel-btn {
+            background-color: #dc3545;
+        }
+
+        .modal-footer .cancel-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+    {% block navbar %}
+        {% include 'navbar.html' %}
+    {% endblock %}
+
+    {% block content %}
+    <div class="container">
+        <!-- Barra de búsqueda -->
+        <form class="form-inline search-form" method="POST" action="{{ url_for('buscar_usuarios') }}">
+            <input class="form-control mr-sm-2" type="text" name="buscar" placeholder="Buscar por nombre o ID" aria-label="Buscar">
+            <button class="btn my-2 my-sm-0" type="submit">Buscar</button>
+        </form>
+
+        <!-- Botón de registrar nuevo usuario -->
+        <div class="mb-3 mt-2">
+            <a href="{{ url_for('registrar_usuario') }}" class="btn btn-register-small">Registrar nuevo usuario</a>
+        </div>
+
+        <!-- Tabla de usuarios -->
+        <table class="table table-dark table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Id del Usuario</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellido Pat</th>
+                    <th scope="col">Apellido Mat</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Contraseña</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in datos %}
+                    <tr>
+                        <td>{{ usuario[0] }}</td>
+                        <td>{{ usuario[1] }}</td>
+                        <td>{{ usuario[2] }}</td>
+                        <td>{{ usuario[3] }}</td>
+                        <td>{{ usuario[4] }}</td>
+                        <td>********</td>
+                        <td>
+                            <form action="{{ url_for('update1_usuarios', id_usuario=usuario[0]) }}" method="POST">
+                                <button type="submit" class="btn btn-edit">Editar</button>
+                            </form>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-delete" onclick="showModal('{{ url_for('delete_usuarios', id_usuario=usuario[0]) }}')">Eliminar</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Ventana Emergente -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div class="modal-body">
+                <h2>Confirmación</h2>
+                <p>¿Estás seguro de que deseas eliminar este usuario?</p>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteForm" method="POST" action="" onsubmit="return submitForm()">
+                    <button type="submit">Confirmar</button>
+                </form>
+                <button class="cancel-btn" onclick="closeModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var currentDeleteUrl = '';
+
+        function showModal(deleteUrl) {
+            currentDeleteUrl = deleteUrl;
+            document.getElementById('deleteForm').action = deleteUrl;
+            document.getElementById('confirmationModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('confirmationModal').style.display = 'none';
+        }
+
+        function submitForm() {
+            // Redirige a la misma página después de eliminar
+            window.location.href = '{{ url_for("usuarios") }}';
+            return true; // Permite que el formulario se envíe
+        }
+    </script>
+
+    {% endblock %}
+
+{% endblock %}

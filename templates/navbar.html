@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand-lg navbar-light mi-nav">
+    <a class="navbar-brand" href="{{ url_for('index') }}">Tienda Comunitaria Diconsa</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="nav-links-container">
+            <ul class="navbar-nav mi-ul">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('usuarios') }}">Usuarios</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('productos') }}">Productos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('ventas') }}">Ventas</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- Bloque de saludo y cierre de sesión en la esquina superior derecha -->
+    <div class="navbar-text custom-username position-absolute top-0 end-0 p-3">
+        {% if session.get('username') %}
+                <h4>
+                Hola, {{ session.username }} ({{ session.role }})
+                    <a class="nav-link" href="{{ url_for('logout') }}">Cerrar Sesión</a>
+                </h4>
+        {% else %}
+            <a class="nav-link" href="{{ url_for('login') }}">Iniciar Sesión</a>
+        {% endif %}
+    </div>
+</nav>

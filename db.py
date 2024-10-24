@@ -4,9 +4,9 @@ from psycopg2 import pool
 #crear pool de connecion
 connection_pool=pool.SimpleConnectionPool(
     1,20,
-    database= "BDDiconsa",
+    database= "spvtcd",
     user="postgres",
-    password="cris20",
+    password="Kokies13",
     host="localhost",
     port="5432"
 )

@@ -3,9 +3,7 @@
 {% block head %}
     {{ super() }}
     <title>
-        {% block title %}
-        Diconsa Web App - Editar usuario
-        {% endblock %}
+        {% block title %} Diconsa Web App - Editar usuario {% endblock %}
     </title>
     <link rel="stylesheet" href="../static/style.css">
     <style>
@@ -14,7 +12,7 @@
             font-family: Arial, sans-serif;
         }
 
-        /* Fondo de la ventana emergente */
+        /* Estilo del modal */
         .modal {
             display: none; /* Oculto por defecto */
             position: fixed;
@@ -27,7 +25,6 @@
             align-items: center;
         }
 
-        /* Contenido de la ventana emergente */
         .modal-content {
             background-color: #ffffff;
             border-radius: 8px;
@@ -37,7 +34,6 @@
             position: relative;
         }
 
-        /* Botón de cerrar la ventana emergente */
         .modal-close {
             position: absolute;
             top: 10px;
@@ -53,13 +49,11 @@
             color: #000;
         }
 
-        /* Estilo del mensaje dentro de la ventana emergente */
         .modal-body {
             margin-top: 20px;
             text-align: center;
         }
 
-        /* Estilo del pie de página de la ventana emergente */
         .modal-footer {
             display: flex;
             justify-content: center;
@@ -105,15 +99,15 @@
                     <input type="hidden" name="id" value="{{ usuario[0] }}">
                     <div class="form-group">
                         <label for="nombre">Nombre del usuario</label>
-                        <input type="text" name="nombre" value="{{ usuario[1] }}" class="form-control">
+                        <input type="text" name="nombre" value="{{ usuario[1] }}" class="form-control" required>
                     </div>
                     <div class="form-group">
                         <label for="apellido-pat">Apellido paterno</label>
-                        <input type="text" name="apellido-pat" value="{{ usuario[2] }}" class="form-control">
+                        <input type="text" name="apellido-pat" value="{{ usuario[2] }}" class="form-control" required>
                     </div>
                     <div class="form-group">
                         <label for="apellido-mat">Apellido materno</label>
-                        <input type="text" name="apellido-mat" value="{{ usuario[3] }}" class="form-control">
+                        <input type="text" name="apellido-mat" value="{{ usuario[3] }}" class="form-control" required>
                     </div>
                     <div class="form-group">
                         <label for="tipo">Tipo</label>
@@ -124,7 +118,8 @@
                     </div>
                     <div class="form-group">
                         <label for="contrasena">Contraseña</label>
-                        <input type="text" name="contrasena" value="{{ usuario[] }}********" class="form-control">
+                        <input type="text" name="contrasena" value="********" class="form-control" disabled>
+                        <input type="hidden" name="contrasena" value="{{ usuario[4] }}"> <!-- Campo oculto para enviar la contraseña -->
                     </div>
                     <div class="btn-group">
                         <button type="button" class="btn-update" onclick="showModal()">Actualizar</button>
@@ -134,7 +129,7 @@
             </form>
         </div>
 
-        <!-- Ventana Emergente -->
+        <!-- Ventana Emergente para Confirmación -->
         <div id="confirmationModal" class="modal">
             <div class="modal-content">
                 <button class="modal-close" onclick="closeModal()">&times;</button>
@@ -145,6 +140,20 @@
                 <div class="modal-footer">
                     <button onclick="confirmEdit()">Confirmar</button>
                     <button class="cancel-btn" onclick="closeModal()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ventana Emergente para Éxito -->
+        <div id="successModal" class="modal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeSuccessModal()">&times;</button>
+                <div class="modal-body">
+                    <h2>¡Éxito!</h2>
+                    <p>Datos actualizados correctamente.</p>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="closeSuccessModal()">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -162,5 +171,22 @@
         function confirmEdit() {
             document.getElementById('editForm').submit();
         }
+
+        function showSuccessModal() {
+            document.getElementById('successModal').style.display = 'flex';
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').style.display = 'none';
+            window.location.href = "{{ url_for('usuarios') }}";  // Redirige a la página de usuarios
+        }
+
+        // Verifica si hay un mensaje en la URL y muestra el modal de éxito
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('mensaje')) {
+                showSuccessModal();  // Muestra el modal de éxito
+            }
+        };
     </script>
 {% endblock %}

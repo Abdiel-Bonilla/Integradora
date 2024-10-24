@@ -37,16 +37,17 @@ def login():
         user = cursor.fetchone()
         cursor.close()
         db.desconectar(conn)
+        # Verificar si el usuario existe y la contraseña es correcta
         if user and check_password_hash(user[2], password):
             session['user_id'] = user[0]
             session['username'] = user[1]
-            session['role'] = user[3]  # Almacena el rol del usuario
+            session['role'] = user[3]  # Almacena el rol del usuario en la sesión
             flash('Inicio de sesión exitoso', 'success')
             return redirect(url_for('index'))
         else:
-            flash('Nombre de usuario o contraseña incorrectos', 'danger')
-
+            flash('Nombre de usuario o contraseña incorrectos', 'danger')  # Mensaje de error
     return render_template('login.html', form=form)
+
 
 @app.route('/logout')
 def logout():
@@ -56,7 +57,7 @@ def logout():
     flash('Has cerrado sesión exitosamente.', 'success')
     return redirect(url_for('login'))
 
-# Asegúrate de usar @role_required en las rutas que necesiten autenticación
+
 def role_required(roles):
     def decorator(f):
         @wraps(f)
@@ -107,7 +108,6 @@ def buscar_usuarios():
 def update1_usuarios(id_usuario):
     # Conectar con la base de datos
     conn = db.conectar()
-    # Crear un cursor (objeto para recorrer las tablas)
     cursor = conn.cursor()
     # Recuperar el registro del producto seleccionado
     cursor.execute('''SELECT * FROM "Usuario" WHERE id_usuario=%s''', (id_usuario,))
@@ -122,20 +122,23 @@ def update2_usuarios(id_usuario):
     apellido_pat = request.form['apellido-pat']
     apellido_mat = request.form['apellido-mat']
     cargo = request.form['tipo']
-    contrasena = request.form['contrasena']
+    contrasena = request.form['contrasena']  # Asegúrate de que este campo siempre se envíe
+
     # Conectar con la base de datos
     conn = db.conectar()
     cursor = conn.cursor()
+    
     # Actualizar los datos del usuario en la base de datos
-    cursor.execute('''
-        UPDATE "Usuario"
-        SET nombre=%s, ape_pat=%s, ape_mat=%s, tipo=%s, contrasena=%s
-        WHERE id_usuario=%s
-    ''', (nombre, apellido_pat, apellido_mat, cargo, contrasena, id_usuario))
+    cursor.execute('''UPDATE "Usuario" SET nombre=%s, ape_pat=%s, ape_mat=%s, tipo=%s, contrasena=%s WHERE id_usuario=%s''', 
+                   (nombre, apellido_pat, apellido_mat, cargo, contrasena, id_usuario))
     conn.commit()
     cursor.close()
     db.desconectar(conn)
-    return redirect(url_for('usuarios'))
+
+    # Redirigir a la página de usuarios con un mensaje de éxito
+    return redirect(url_for('usuarios', mensaje='Datos actualizados correctamente.'))
+
+
 
 @app.route('/registrar_usuario', methods=['GET', 'POST'])
 def registrar_usuario():
@@ -163,16 +166,17 @@ def registrar_usuario():
 @app.route('/delete_usuarios/<int:id_usuario>', methods=['POST'])
 def delete_usuarios(id_usuario):
     # Conectar con la base de datos
-    conn= db.conectar()
-    #crear un cursor (objeto para recorrer las tablas)
-    cursor= conn.cursor()
-    #Borrar el registro con el id_pais seleccionado
-    cursor.execute('''DELETE FROM "Usuario" WHERE id_usuario=%s''',
-                    (id_usuario,))
+    conn = db.conectar()
+    # Crear un cursor
+    cursor = conn.cursor()
+    # Ejecutar la eliminación
+    cursor.execute('''DELETE FROM "Usuario" WHERE id_usuario=%s''', (id_usuario,))
     conn.commit()
     cursor.close()
     db.desconectar(conn)
-    return redirect(url_for('index'))
+    # Redirigir con un parámetro de éxito
+    return redirect(url_for('usuarios', success=True))
+
 
 #PRODUCTOOOS
 

@@ -137,7 +137,7 @@
         </table>
     </div>
 
-    <!-- Ventana Emergente -->
+    <!-- Ventana Emergente para confirmar eliminación -->
     <div id="confirmationModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal()">&times;</button>
@@ -154,6 +154,20 @@
         </div>
     </div>
 
+    <!-- Ventana Emergente para mostrar mensaje de éxito -->
+    <div id="successModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div class="modal-body">
+                <h2>Éxito</h2>
+                <p>El usuario ha sido eliminado correctamente.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-accept" onclick="window.location.href='{{ url_for('usuarios') }}'">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         var currentDeleteUrl = '';
 
@@ -165,15 +179,24 @@
 
         function closeModal() {
             document.getElementById('confirmationModal').style.display = 'none';
+            document.getElementById('successModal').style.display = 'none';
         }
 
         function submitForm() {
-            // Redirige a la misma página después de eliminar
-            window.location.href = '{{ url_for("usuarios") }}';
-            return true; // Permite que el formulario se envíe
+            // Permitir el envío del formulario y cerrar el modal de confirmación
+            closeModal();
+            return true;  // Permitir el envío del formulario
         }
+
+        // Función para mostrar el modal de éxito si la eliminación fue exitosa
+        window.onload = function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('success')) {
+                document.getElementById('successModal').style.display = 'flex';
+            }
+        };
     </script>
 
-    {% endblock %}
+{% endblock %}
 
 {% endblock %}

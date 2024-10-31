@@ -427,3 +427,6 @@ def imprimir_venta(venta_id):
     finally:
         cursor.close()
         conn.close()
+
+
+#primer commit de Rabrandon

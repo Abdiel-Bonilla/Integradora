@@ -427,3 +427,104 @@ def imprimir_venta(venta_id):
     finally:
         cursor.close()
         conn.close()
+
+#Categoriaaaaaaaaaaaas
+@app.route('/categorias')
+@role_required(['admin'])
+def categorias():
+    conn = db.conectar()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM "Categoria" ORDER BY id_categ')
+    datos = cursor.fetchall()
+    cursor.close()
+    db.desconectar(conn)
+    return render_template('categorias.html', datos=datos)
+
+@app.route('/buscar_categorias', methods=['POST'])
+def buscar_categorias():
+    buscar_texto = request.form['buscar']
+    conn = db.conectar()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT * FROM "Categoria"
+        WHERE nombre_ca ILIKE %s OR id_categ::TEXT ILIKE %s
+    ''', (f'%{buscar_texto}%', f'%{buscar_texto}%'))
+    datos = cursor.fetchall()
+    cursor.close()
+    db.desconectar(conn)
+    return render_template('categorias.html', datos=datos)
+
+@app.route('/delete_categoria/<int:id_categ>', methods=['POST'])
+def delete_categoria(id_categ):
+    conn = db.conectar()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('DELETE FROM "Categoria" WHERE id_categ=%s', (id_categ,))
+        conn.commit()
+        flash('Categoría eliminada exitosamente', 'success')
+    except Exception as e:
+        conn.rollback()
+        flash('No se puede eliminar la categoría porque tiene productos asociados', 'danger')
+    finally:
+        cursor.close()
+        db.desconectar(conn)
+    return redirect(url_for('categorias'))
+
+@app.route('/registrar_categoria', methods=['GET', 'POST'])
+@role_required(['admin'])
+def registrar_categoria():
+    form = CategoriaForm()
+    if form.validate_on_submit():
+        nombre = form.nombre_ca.data
+        descripcion = form.descripcion.data
+        conn = db.conectar()
+        cursor = conn.cursor()
+        try:
+            cursor.execute('''
+                INSERT INTO "Categoria" (nombre_ca, descripcion)
+                VALUES (%s, %s)
+            ''', (nombre, descripcion))
+            conn.commit()
+            flash('Categoría registrada exitosamente', 'success')
+            return redirect(url_for('categorias'))
+        except Exception as e:
+            conn.rollback()
+            flash(f'Error al registrar la categoría: {str(e)}', 'danger')
+        finally:
+            cursor.close()
+            db.desconectar(conn)
+    return render_template('registrar_categoria.html', form=form)
+
+@app.route('/update1_categoria/<int:id_categ>', methods=['POST'])
+@role_required(['admin'])
+def update1_categoria(id_categ):
+    conn = db.conectar()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM "Categoria" WHERE id_categ=%s', (id_categ,))
+    datos = cursor.fetchone()
+    cursor.close()
+    db.desconectar(conn)
+    return render_template('editar_categoria.html', datos=datos)
+
+@app.route('/update2_categoria/<int:id_categ>', methods=['POST'])
+@role_required(['admin'])
+def update2_categoria(id_categ):
+    nombre = request.form['nombre']
+    descripcion = request.form['descripcion']
+    conn = db.conectar()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('''
+            UPDATE "Categoria"
+            SET nombre_ca=%s, descripcion=%s
+            WHERE id_categ=%s
+        ''', (nombre, descripcion, id_categ))
+        conn.commit()
+        flash('Categoría actualizada exitosamente', 'success')
+    except Exception as e:
+        conn.rollback()
+        flash(f'Error al actualizar la categoría: {str(e)}', 'danger')
+    finally:
+        cursor.close()
+        db.desconectar(conn)
+    return redirect(url_for('categorias'))

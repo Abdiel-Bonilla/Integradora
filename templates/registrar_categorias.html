@@ -1,0 +1,55 @@
+{% extends 'bootstrap/base.html' %}
+{% block head %}
+    {{ super() }}
+    {% block title %}Diconsa Web App - Registrar Categoría{% endblock %}
+{% endblock %}
+
+{% block body %}
+    {% block navbar %}
+        {% include 'navbar.html' %}
+    {% endblock %}
+
+    {% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <h2 class="text-center">Registrar Nueva Categoría</h2>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" class="needs-validation" novalidate>
+                            {{ form.hidden_tag() }}
+                            
+                            <div class="form-group">
+                                {{ form.nombre_ca.label(class="form-control-label") }}
+                                {{ form.nombre_ca(class="form-control") }}
+                                {% if form.nombre_ca.errors %}
+                                    {% for error in form.nombre_ca.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form.descripcion.label(class="form-control-label") }}
+                                {{ form.descripcion(class="form-control") }}
+                                {% if form.descripcion.errors %}
+                                    {% for error in form.descripcion.errors %}
+                                        <span class="text-danger">{{ error }}</span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group text-center">
+                                {{ form.submit(class="btn btn-success mr-2") }}
+                                <a href="{{ url_for('categorias') }}" class="btn btn-secondary">Cancelar</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+{% endblock %}

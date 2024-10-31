@@ -32,10 +32,12 @@ class VentaForm(FlaskForm):
     submit = SubmitField('Registrar Venta')
     cancelar = SubmitField('Cancelar')
 
-
-
 class LoginForm(FlaskForm):
     username = StringField('Nombre de Usuario', validators=[DataRequired()])
     password = PasswordField('Contraseña', validators=[DataRequired()])
     submit = SubmitField('Iniciar Sesión')
 
+class CategoriaForm(FlaskForm):
+    nombre_ca = StringField('Nombre de la Categoría', validators=[DataRequired()])
+    descripcion = StringField('Descripción', validators=[DataRequired()])
+    submit = SubmitField('Guardar Categoría')

@@ -309,42 +309,46 @@ def registrar_producto():
 @app.route('/ventas')
 @role_required(['admin', 'cashier'])
 def ventas():
-    #conectar con la BD
-    conn= db.conectar()
-    #crear un cursor (objeto para recorrer las tablas)
-    cursor= conn.cursor()
-    #ejecutar una consulta en postgres
-    cursor.execute('''SELECT*FROM ventas_view2 ORDER BY id ''')
-    #recuperar informacion
-    datos= cursor.fetchall()
-    #cerrar cursor y conexion de la base de datos
+    conn = db.conectar()
+    cursor = conn.cursor()
+    cursor.execute('''SELECT * FROM ventas_view2 ORDER BY id''')
+    datos_ventas = cursor.fetchall()
+
+    # Obtener carrito de la sesión
+    carrito = session.get('carrito', [])
+
+    # Crear datos combinados de ventas y carrito
+    combined_data = datos_ventas + [
+        (None, datetime.now().strftime('%Y-%m-%d'), datetime.now().strftime('%H:%M:%S'),
+         session.get('username', 'Desconocido'), None, item['nombre'], item['cantidad'], item['total'])
+        for item in carrito
+    ]
+
     cursor.close()
     db.desconectar(conn)
-    return render_template('ventas.html', datos=datos)
+
+    return render_template('ventas.html', datos=combined_data)
+
 
 @app.route('/buscar_ventas', methods=['POST'])
 def buscar_ventas():
     buscar_texto = request.form['buscar']
-    # Conectar con la base de datos
-    conn= db.conectar()
-    #crear un cursor (objeto para recorrer las tablas)
-    cursor= conn.cursor()
-    cursor.execute('''
-        SELECT * FROM consulta_ventas
-        WHERE id::TEXT ILIKE %s OR "Nombre de Usuario" ILIKE %s
-    ''', (f'%{buscar_texto}%', f'%{buscar_texto}%'))
+    conn = db.conectar()
+    cursor = conn.cursor()
+    cursor.execute('''SELECT * FROM consulta_ventas 
+                      WHERE id::TEXT ILIKE %s OR "Nombre de Usuario" ILIKE %s''', 
+                   (f'%{buscar_texto}%', f'%{buscar_texto}%'))
     datos = cursor.fetchall()
     cursor.close()
     db.desconectar(conn)
     return render_template('ventas.html', datos=datos)
 
+
 @app.route('/delete_ventas/<int:id_venta>', methods=['POST'])
 def delete_ventas(id_venta):
-    # Conectar con la base de datos
     conn = db.conectar()
     cursor = conn.cursor()
     try:
-        # Eliminar la venta
         cursor.execute('DELETE FROM ventas WHERE id_venta=%s', (id_venta,))
         conn.commit()
         flash('Venta eliminada exitosamente', 'success')
@@ -357,51 +361,77 @@ def delete_ventas(id_venta):
     return redirect(url_for('ventas'))
 
 
-
 @app.route('/registrar_venta', methods=['GET', 'POST'])
 def registrar_venta():
     form = VentaForm()
-    total = 0
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    # Establecer la fecha y hora actuales
-    form.fecha.data = datetime.now().strftime('%d-%m-%Y')  # Formato día-mes-año
+
+    form.fecha.data = datetime.now().strftime('%d-%m-%Y')
     form.hora.data = datetime.now().strftime('%H:%M:%S')
-    # Llenar el campo de usuario con el nombre de usuario en la sesión
     form.usuario.data = session.get('username', '')
+
     conn = db.conectar()
     cursor = conn.cursor()
     try:
-        # Cargar opciones de productos
         cursor.execute('SELECT id_prod, nombre, precio_cu FROM producto')
         productos = cursor.fetchall()
         form.producto.choices = [(prod[0], prod[1]) for prod in productos]
+
         if form.validate_on_submit():
             if form.cancelar.data:
                 return redirect(url_for('ventas'))
-            
-            # Obtener el precio del producto
-            producto_id = form.producto.data
-            cursor.execute('SELECT precio_cu FROM producto WHERE id_prod = %s', (producto_id,))
-            precio = cursor.fetchone()[0]
-            # Calcular el total
-            cantidad = form.cantidad.data
-            total = cantidad * precio
-            # Insertar venta en la base de datos, asociando la venta al usuario autenticado
-            cursor.execute('''
-                INSERT INTO ventas (fecha_reali, hora_reali, fk_usuario, fk_producto, cantidad_prod, total)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            ''', (form.fecha.data, form.hora.data, session['user_id'], producto_id, cantidad, total))
-            conn.commit()
-            flash('Venta registrada exitosamente', 'success')
-            return render_template('registrar_venta.html', form=form, total=total, success=True)
+
+            if 'agregar' in request.form:
+                producto_id = form.producto.data
+                cursor.execute('SELECT nombre, precio_cu FROM producto WHERE id_prod = %s', (producto_id,))
+                producto = cursor.fetchone()
+                nombre_producto, precio = producto
+                cantidad = form.cantidad.data
+                total_producto = cantidad * precio
+
+                # Asegúrate de que el carrito almacene correctamente los productos
+                if 'carrito' not in session:
+                    session['carrito'] = []
+
+                # Verifica si el producto ya existe en el carrito
+                for item in session['carrito']:
+                    if item['nombre'] == nombre_producto:
+                        item['cantidad'] += cantidad
+                        item['total'] += total_producto
+                        break
+                else:  # Si no existe, lo agrega nuevo
+                    session['carrito'].append({
+                        'nombre': nombre_producto,
+                        'cantidad': cantidad,
+                        'precio': precio,
+                        'total': total_producto
+                    })
+
+                session.modified = True
+                flash('Producto agregado al carrito', 'success')
+                return render_template('registrar_venta.html', form=form, carrito=session['carrito'])
+
+            if 'confirmar' in request.form:
+                # Guardar todos los productos del carrito
+                for item in session['carrito']:
+                    cursor.execute('''INSERT INTO ventas (fecha_reali, hora_reali, fk_usuario, fk_producto, cantidad_prod, total)
+                                      VALUES (%s, %s, %s, 
+                                              (SELECT id_prod FROM producto WHERE nombre = %s), 
+                                              %s, %s)''',
+                                   (form.fecha.data, form.hora.data, session['user_id'], item['nombre'], item['cantidad'], item['total']))
+                conn.commit()
+                session.pop('carrito', None)  # Limpia el carrito después de confirmar la venta
+                flash('Venta registrada exitosamente', 'success')
+                return redirect(url_for('ventas'))
     except Exception as e:
-        print(f'Error: {e}')
+        conn.rollback()
         flash(f'Error al registrar la venta: {e}', 'danger')
     finally:
         cursor.close()
-        conn.close()
-    return render_template('registrar_venta.html', form=form, total=total, success=False)
+        db.desconectar(conn)
+
+    return render_template('registrar_venta.html', form=form, carrito=session.get('carrito', []))
 
 
 @app.route('/imprimir_venta/<int:venta_id>', methods=['POST'])
@@ -409,20 +439,16 @@ def imprimir_venta(venta_id):
     conn = db.conectar()
     cursor = conn.cursor()
     try:
-        cursor.execute('''
-            SELECT v.id_venta, v.fecha_reali, v.hora_reali, u.nombre AS usuario, 
-                   u.tipo AS cargo, p.nombre AS producto, v.cantidad_prod, v.total 
-            FROM ventas v
-            JOIN "Usuario" u ON v.fk_usuario = u.id_usuario
-            JOIN producto p ON v.fk_producto = p.id_prod
-            WHERE v.id_venta = %s
-        ''', (venta_id,))
+        cursor.execute('''SELECT v.id_venta, v.fecha_reali, v.hora_reali, u.nombre AS usuario, 
+                                 u.tipo AS cargo, p.nombre AS producto, v.cantidad_prod, v.total
+                          FROM ventas v
+                          JOIN "Usuario" u ON v.fk_usuario = u.id_usuario
+                          JOIN producto p ON v.fk_producto = p.id_prod
+                          WHERE v.id_venta = %s''', (venta_id,))
         venta = cursor.fetchone()
-
         if venta:
             pdf_buffer = generar_pdf(venta)
             return send_file(pdf_buffer, as_attachment=True, download_name=f'venta_{venta_id}.pdf', mimetype='application/pdf')
-
         flash('Error: Venta no encontrada.', 'danger')
         return redirect(url_for('ventas'))
     except Exception as e:
@@ -430,6 +456,37 @@ def imprimir_venta(venta_id):
         return redirect(url_for('ventas'))
     finally:
         cursor.close()
-        conn.close()
+        db.desconectar(conn)
+
+@app.route('/detalle_venta/<int:venta_id>', methods=['GET'])
+def detalle_venta(venta_id):
+    conn = db.conectar()
+    cursor = conn.cursor()
+    try:
+        # Obtener detalles de la venta
+        cursor.execute('''SELECT v.id_venta, v.fecha_reali, v.hora_reali, u.nombre AS usuario
+                          FROM ventas v
+                          JOIN "Usuario" u ON v.fk_usuario = u.id_usuario
+                          WHERE v.id_venta = %s''', (venta_id,))
+        venta = cursor.fetchone()
+
+        # Obtener productos de la venta específica
+        cursor.execute('''SELECT p.nombre, v.cantidad_prod, v.total
+                          FROM ventas v
+                          JOIN producto p ON v.fk_producto = p.id_prod
+                          WHERE v.id_venta = %s''', (venta_id,))
+        productos = cursor.fetchall()
+
+        if venta:
+            return render_template('detalle_venta.html', venta=venta, productos=productos)
+        flash('Error: Venta no encontrada.', 'danger')
+        return redirect(url_for('ventas'))
+    except Exception as e:
+        flash(f'Error al obtener el detalle de la venta: {e}', 'danger')
+        return redirect(url_for('ventas'))
+    finally:
+        cursor.close()
+        db.desconectar(conn)
+
 
 #hola soy elangel

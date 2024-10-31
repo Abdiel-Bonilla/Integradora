@@ -1,205 +1,69 @@
 {% extends 'bootstrap/base.html' %}
-
 {% block head %}
     {{ super() }}
     <title>
         {% block title %}
-        Diconsa Web App Ventas
+            Diconsa Web App Ventas
         {% endblock %}
     </title>
     <link rel="stylesheet" href="../static/style.css">
-    <style>
-        /* Estilo para el modal */
-        .modal {
-            display: none; /* Oculto por defecto */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #ffffff;
-            border-radius: 8px;
-            padding: 20px;
-            max-width: 400px;
-            width: 100%;
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: #333;
-        }
-
-        .modal-close:hover {
-            color: #000;
-        }
-
-        .modal-body {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .modal-footer button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-            margin: 0 5px;
-        }
-
-        .modal-footer button:hover {
-            background-color: #0056b3;
-        }
-
-        .modal-footer .cancel-btn {
-            background-color: #dc3545;
-        }
-
-        .modal-footer .cancel-btn:hover {
-            background-color: #c82333;
-        }
-    </style>
 {% endblock %}
-
 {% block body %}
-
-    {% block navbar %}
-        {% include 'navbar.html' %}
-    {% endblock %}
-
-    {% block content %}
-    <div class="container">
-        <!-- Barra de búsqueda -->
-        <form class="form-inline search-form" method="POST" action="{{ url_for('buscar_ventas') }}">
-            <input class="form-control mr-sm-2" type="text" name="buscar" placeholder="Buscar por nombre o ID" aria-label="Buscar">
-            <button class="btn my-2 my-sm-0" type="submit">Buscar</button>
-        </form>
-
-        <!-- Botón de registrar nueva venta -->
-        <div class="mb-3 mt-2">
-            <a href="{{ url_for('registrar_venta') }}" class="btn btn-register-small">Registrar nueva venta</a>
-        </div>
-
-        <!-- Tabla de ventas -->
-        <table class="table table-dark table-striped">
-            <thead>
+{% block navbar %}
+    {% include 'navbar.html' %}
+{% endblock %}
+{% block content %}
+<div class="container">
+    <!-- Barra de búsqueda -->
+    <form class="form-inline search-form" method="POST" action="{{ url_for('buscar_ventas') }}">
+        <input class="form-control mr-sm-2" type="text" name="buscar" placeholder="Buscar por nombre o ID" aria-label="Buscar">
+        <button class="btn my-2 my-sm-0" type="submit">Buscar</button>
+    </form>
+    <!-- Botón de registrar nueva venta -->
+    <div class="mb-3 mt-2">
+        <a href="{{ url_for('registrar_venta') }}" class="btn btn-register-small">Registrar nueva venta</a>
+    </div>
+    <!-- Tabla de ventas y carrito -->
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th scope="col">ID de venta</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Hora realizada</th>
+                <th scope="col">Nombre de usuario</th>
+                <th scope="col">Cargo</th>
+                <th scope="col">Producto</th>
+                <th scope="col">Cantidad de producto</th>
+                <th scope="col">Total</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venta in datos %}
                 <tr>
-                    <th scope="col">Id de Venta</th>
-                    <th scope="col">Fecha</th>
-                    <th scope="col">Hora realizada</th>
-                    <th scope="col">Nombre de usuario</th>
-                    <th scope="col">Cargo</th>
-                    <th scope="col">Producto</th>
-                    <th scope="col">Cantidad de producto</th>
-                    <th scope="col">Total</th>
+                    <td>{{ venta[0] }}</td>
+                    <td>{{ venta[1] }}</td>
+                    <td>{{ venta[2] }}</td>
+                    <td>{{ venta[3] }}</td>
+                    <td>{{ venta[4] }}</td>
+                    <td>{{ venta[5] }}</td>
+                    <td>{{ venta[6] }}</td>
+                    <td>{{ venta[7] }}</td>
+                    <td>
+                        {% if venta[0] is not none %}
+                        <form action="{{ url_for('imprimir_venta', venta_id=venta[0]) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-edit" onclick="return confirm('¿Estás seguro de que quieres imprimir esta venta?');">Imprimir</button>
+                        </form>
+                        <a href="{{ url_for('detalle_venta', venta_id=venta[0]) }}" class="btn btn-info">Detalle de venta</a>
+                        {% else %}
+                        <button type="button" class="btn btn-edit" disabled>No imprimible</button>
+                        <button type="button" class="btn btn-edit">Detalle de venta</button>
+                        {% endif %}
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                {% for venta in datos %}
-                    <tr>
-                        <td>{{ venta[0] }}</td>
-                        <td>{{ venta[1] }}</td>
-                        <td>{{ venta[2] }}</td>
-                        <td>{{ venta[3] }}</td>
-                        <td>{{ venta[4] }}</td>
-                        <td>{{ venta[5] }}</td>
-                        <td>{{ venta[6] }}</td>
-                        <td>{{ venta[7] }}</td>
-                        <td>
-                            <button type="button" class="btn btn-edit" onclick="showPrintModal('{{ url_for('imprimir_venta', venta_id=venta[0]) }}')">Imprimir</button>
-                            <!-- <button type="button" class="btn btn-delete" onclick="showDeleteModal('{{ url_for('delete_ventas', id_venta=venta[0]) }}')">Cancelar</button> -->
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Ventana Emergente de Confirmación de Impresión -->
-    <div id="printConfirmationModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closePrintModal()">&times;</button>
-            <div class="modal-body">
-                <h2>Confirmación de Impresión</h2>
-                <p>¿Estás seguro de que deseas imprimir esta venta?</p>
-            </div>
-            <div class="modal-footer">
-                <form id="printForm" method="POST" action="">
-                    <button type="submit">Confirmar</button>
-                </form>
-                <button class="cancel-btn" onclick="closePrintModal()">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Ventana Emergente de Confirmación de Eliminación -->
-    <div id="deleteConfirmationModal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
-            <div class="modal-body">
-                <h2>Confirmación de Cancelación</h2>
-                <p>¿Estás seguro de que deseas cancelar esta venta?</p>
-            </div>
-            <div class="modal-footer">
-                <form id="deleteForm" method="POST" action="">
-                    <button type="submit">Confirmar</button>
-                </form>
-                <button class="cancel-btn" onclick="closeDeleteModal()">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        var currentPrintUrl = '';
-        var currentDeleteUrl = '';
-
-        function showPrintModal(printUrl) {
-            currentPrintUrl = printUrl;
-            document.getElementById('printForm').action = printUrl;
-            document.getElementById('printConfirmationModal').style.display = 'flex';
-        }
-
-        function showDeleteModal(deleteUrl) {
-            currentDeleteUrl = deleteUrl;
-            document.getElementById('deleteForm').action = deleteUrl;
-            document.getElementById('deleteConfirmationModal').style.display = 'flex';
-        }
-
-        function closePrintModal() {
-            document.getElementById('printConfirmationModal').style.display = 'none';
-        }
-
-        function closeDeleteModal() {
-            document.getElementById('deleteConfirmationModal').style.display = 'none';
-        }
-
-        function submitForm() {
-            window.location.href = '{{ url_for("ventas") }}';
-            return true;
-        }
-    </script>
-    {% endblock %}
-
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
 {% endblock %}

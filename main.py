@@ -431,3 +431,5 @@ def imprimir_venta(venta_id):
     finally:
         cursor.close()
         conn.close()
+
+#hola soy elangel

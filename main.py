@@ -308,12 +308,12 @@ def registrar_producto():
 #VENTAAAS
 
 @app.route('/ventas')
+@role_required(['admin', 'cashier'])
 def ventas():
-    with get_db_connection() as conn:
-        with conn.cursor() as cursor:
-            cursor.execute("SELECT * FROM ventas")
-            ventas = cursor.fetchall()
-    return render_template('ventas.html', ventas=ventas)
+    conn = db.conectar()
+    cursor = conn.cursor()
+    cursor.execute('''SELECT * FROM ventas_view2 ORDER BY id''')
+    datos_ventas = cursor.fetchall()
 
     # Obtener carrito de la sesión
     carrito = session.get('carrito', [])

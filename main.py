@@ -6,7 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms.fields import PasswordField,StringField,SubmitField
 from wtforms.validators import DataRequired
 import db
-from forms import UsuariosForm,ProductosForm,VentaForm
+from forms import UsuariosForm,ProductosForm,VentaForm,CategoriaForm
 from werkzeug.security import generate_password_hash,check_password_hash
 from functools import wraps
 from datetime import datetime
@@ -476,14 +476,13 @@ def registrar_categoria():
     form = CategoriaForm()
     if form.validate_on_submit():
         nombre = form.nombre_ca.data
-        descripcion = form.descripcion.data
         conn = db.conectar()
         cursor = conn.cursor()
         try:
             cursor.execute('''
-                INSERT INTO "Categoria" (nombre_ca, descripcion)
-                VALUES (%s, %s)
-            ''', (nombre, descripcion))
+                INSERT INTO "Categoria" (nombre_ca)
+                VALUES (%s)
+            ''', (nombre,))
             conn.commit()
             flash('Categoría registrada exitosamente', 'success')
             return redirect(url_for('categorias'))
@@ -521,10 +520,11 @@ def update2_categoria(id_categ):
         ''', (nombre, descripcion, id_categ))
         conn.commit()
         flash('Categoría actualizada exitosamente', 'success')
+        return render_template(url_for('categorias'))
     except Exception as e:
         conn.rollback()
         flash(f'Error al actualizar la categoría: {str(e)}', 'danger')
+        return redirect(url_for('update1_categoria', id_categ=id_categ))
     finally:
         cursor.close()
         db.desconectar(conn)
-    return redirect(url_for('categorias'))

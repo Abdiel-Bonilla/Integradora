@@ -31,16 +31,6 @@
                                 {% endif %}
                             </div>
 
-                            <div class="form-group">
-                                {{ form.descripcion.label(class="form-control-label") }}
-                                {{ form.descripcion(class="form-control") }}
-                                {% if form.descripcion.errors %}
-                                    {% for error in form.descripcion.errors %}
-                                        <span class="text-danger">{{ error }}</span>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-
                             <div class="form-group text-center">
                                 {{ form.submit(class="btn btn-success mr-2") }}
                                 <a href="{{ url_for('categorias') }}" class="btn btn-secondary">Cancelar</a>

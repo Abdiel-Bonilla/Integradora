@@ -39,5 +39,4 @@ class LoginForm(FlaskForm):
 
 class CategoriaForm(FlaskForm):
     nombre_ca = StringField('Nombre de la Categoría', validators=[DataRequired()])
-    descripcion = StringField('Descripción', validators=[DataRequired()])
     submit = SubmitField('Guardar Categoría')

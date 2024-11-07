@@ -18,21 +18,15 @@
                         <h2 class="text-center">Editar Categoría</h2>
                     </div>
                     <div class="card-body">
-                        <form action="{{ url_for('update2_categoria', id_categ=datos[0]) }}" method="POST" class="needs-validation" novalidate>
+                        <form id="editForm" action="{{ url_for('update2_categoria', id_categ=datos[0]) }}" method="POST" class="needs-validation" novalidate>
                             <div class="form-group">
                                 <label for="nombre">Nombre de la Categoría</label>
                                 <input type="text" class="form-control" id="nombre" name="nombre" 
                                        value="{{ datos[1] }}" required>
                             </div>
 
-                            <div class="form-group">
-                                <label for="descripcion">Descripción</label>
-                                <input type="text" class="form-control" id="descripcion" name="descripcion" 
-                                       value="{{ datos[2] }}" required>
-                            </div>
-
                             <div class="form-group text-center">
-                                <button type="submit" class="btn btn-success mr-2">Actualizar</button>
+                                <button type="button" class="btn btn-success mr-2" onclick="confirmUpdate()">Actualizar</button>
                                 <a href="{{ url_for('categorias') }}" class="btn btn-secondary">Cancelar</a>
                             </div>
                         </form>
@@ -56,7 +50,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-success" onclick="document.querySelector('form').submit()">Confirmar</button>
+                        <button type="button" class="btn btn-success" onclick="document.getElementById('editForm').submit()">Confirmar</button>
                     </div>
                 </div>
             </div>
@@ -64,11 +58,9 @@
     </div>
 
     <script>
-        // Validación del formulario antes de enviar
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
+        function confirmUpdate() {
             $('#confirmationModal').modal('show');
-        });
+        }
     </script>
     {% endblock %}
 {% endblock %}

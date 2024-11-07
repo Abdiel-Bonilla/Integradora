@@ -91,9 +91,17 @@
 
     <!-- JavaScript para el modal de confirmación -->
     <script>
-        function confirmarEliminacion(id) {
-            document.getElementById('deleteForm').action = `/delete_categoria/${id}`;
+        // Validación del formulario antes de enviar
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
             $('#confirmationModal').modal('show');
+        });
+    
+        // Función para confirmar y enviar el formulario
+        function confirmarActualizacion() {
+            document.querySelector('form').submit();
+            $('#confirmationModal').modal('hide');
+            window.location.href = "{{ url_for('categorias') }}";
         }
     </script>
     {% endblock %}

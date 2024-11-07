@@ -13,6 +13,7 @@ from datetime import datetime
 from flask import send_file
 from pdf_utils import generar_pdf
 from werkzeug.exceptions import NotFound
+from datetime import datetime
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
@@ -307,12 +308,12 @@ def registrar_producto():
 #VENTAAAS
 
 @app.route('/ventas')
-@role_required(['admin', 'cashier'])
 def ventas():
-    conn = db.conectar()
-    cursor = conn.cursor()
-    cursor.execute('''SELECT * FROM ventas_view2 ORDER BY id''')
-    datos_ventas = cursor.fetchall()
+    with get_db_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT * FROM ventas")
+            ventas = cursor.fetchall()
+    return render_template('ventas.html', ventas=ventas)
 
     # Obtener carrito de la sesión
     carrito = session.get('carrito', [])
@@ -457,36 +458,40 @@ def imprimir_venta(venta_id):
     finally:
         cursor.close()
         db.desconectar(conn)
-
-@app.route('/detalle_venta/<int:venta_id>', methods=['GET'])
+        
+ #"cambi detalle de venta "
+@app.route('/detalle_venta/<int:venta_id>')
 def detalle_venta(venta_id):
-    conn = db.conectar()
+    # Conectar a la base de datos
+    conn = conectar()  # Llama a tu función de conexión
     cursor = conn.cursor()
-    try:
-        # Obtener detalles de la venta
-        cursor.execute('''SELECT v.id_venta, v.fecha_reali, v.hora_reali, u.nombre AS usuario
-                          FROM ventas v
-                          JOIN "Usuario" u ON v.fk_usuario = u.id_usuario
-                          WHERE v.id_venta = %s''', (venta_id,))
-        venta = cursor.fetchone()
 
-        # Obtener productos de la venta específica
-        cursor.execute('''SELECT p.nombre, v.cantidad_prod, v.total
-                          FROM ventas v
-                          JOIN producto p ON v.fk_producto = p.id_prod
-                          WHERE v.id_venta = %s''', (venta_id,))
-        productos = cursor.fetchall()
+    # Obtén los detalles de la venta
+    cursor.execute("""
+        SELECT id_venta, fecha, hora, usuario_id 
+        FROM ventas 
+        WHERE id_venta = %s
+    """, (venta_id,))
+    venta = cursor.fetchone()
 
-        if venta:
-            return render_template('detalle_venta.html', venta=venta, productos=productos)
-        flash('Error: Venta no encontrada.', 'danger')
-        return redirect(url_for('ventas'))
-    except Exception as e:
-        flash(f'Error al obtener el detalle de la venta: {e}', 'danger')
-        return redirect(url_for('ventas'))
-    finally:
-        cursor.close()
-        db.desconectar(conn)
+    # Obtener productos del carrito agrupados
+    cursor.execute("""
+        SELECT p.nombre, SUM(c.cantidad), SUM(c.cantidad * p.precio) 
+        FROM carrito c
+        JOIN productos p ON c.producto_id = p.id
+        WHERE c.usuario_id = %s
+        GROUP BY p.nombre
+    """, (session['usuario_id'],))
+    productos = cursor.fetchall()
+
+    # Cierra el cursor y la conexión
+    cursor.close()
+    conn.close()  # Asegúrate de cerrar la conexión
+
+    # Renderiza la plantilla con los datos de la venta y los productos
+    return render_template('detalle_venta.html', venta=venta, productos=productos)
+
 
 
 #hola soy elangel
+

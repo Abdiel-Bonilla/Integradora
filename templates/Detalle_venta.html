@@ -1,4 +1,5 @@
 {% extends 'bootstrap/base.html' %}
+
 {% block head %}
     {{ super() }}
     <title>Detalle de Venta</title>
@@ -19,23 +20,28 @@
     </div>
 
     <h3>Productos</h3>
-    <table class="table table-bordered">
-        <thead>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for producto in productos %}
             <tr>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Subtotal</th>
+                <td>{{ producto[0] }}</td>  <!-- Nombre del producto -->
+                <td>{{ producto[1] }}</td>  <!-- Cantidad -->
+                <td>{{ producto[2] }}</td>  <!-- Subtotal -->
             </tr>
-        </thead>
-        <tbody>
-            {% for producto in productos %}
-                <tr>
-                    <td>{{ producto[0] }}</td>
-                    <td>{{ producto[1] }}</td>
-                    <td>{{ producto[2] }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        {% else %}
+            <tr>
+                <td colspan="3" class="text-center">No hay productos en el carrito.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 </div>
 {% endblock %}

@@ -4,7 +4,7 @@
     {{ super() }}
     <title>
         {% block title %}
-        Diconsa Web App Usuarios
+            Diconsa Web App Usuarios
         {% endblock %}
     </title>
     <link rel="stylesheet" href="../static/style.css">
@@ -97,10 +97,12 @@
             <button class="btn my-2 my-sm-0" type="submit">Buscar</button>
         </form>
 
-        <!-- Botón de registrar nuevo usuario -->
+        <!-- Botón de registrar nuevo usuario (solo visible para admin) -->
+        {% if session.role == 'admin' %}
         <div class="mb-3 mt-2">
             <a href="{{ url_for('registrar_usuario') }}" class="btn btn-register-small">Registrar nuevo usuario</a>
         </div>
+        {% endif %}
 
         <!-- Tabla de usuarios -->
         <table class="table table-dark table-striped">
@@ -123,6 +125,9 @@
                         <td>{{ usuario[3] }}</td>
                         <td>{{ usuario[4] }}</td>
                         <td>********</td>
+
+                        <!-- Mostrar botones de editar y eliminar solo para administradores -->
+                        {% if session.role == 'admin' %}
                         <td>
                             <form action="{{ url_for('update1_usuarios', id_usuario=usuario[0]) }}" method="POST">
                                 <button type="submit" class="btn btn-edit">Editar</button>
@@ -131,6 +136,9 @@
                         <td>
                             <button type="button" class="btn btn-delete" onclick="showModal('{{ url_for('delete_usuarios', id_usuario=usuario[0]) }}')">Eliminar</button>
                         </td>
+                        {% else %}
+                        <td colspan="2"></td> <!-- Oculta las celdas para editar y eliminar -->
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>

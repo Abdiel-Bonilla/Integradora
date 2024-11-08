@@ -4,7 +4,7 @@
     {{ super() }}
     <title>
         {% block title %}
-        Diconsa Web App Productos
+            Diconsa Web App Productos
         {% endblock %}
     </title>
     <link rel="stylesheet" href="../static/style.css">
@@ -97,10 +97,12 @@
             <button class="btn my-2 my-sm-0" type="submit">Buscar</button>
         </form>
 
-        <!-- Botón de registrar nuevo producto -->
+        <!-- Botón de registrar nuevo producto, visible solo para admin -->
+        {% if session.role == 'admin' %}
         <div class="mb-3 mt-2">
             <a href="{{ url_for('registrar_producto') }}" class="btn btn-register-small">Registrar nuevo producto</a>
         </div>
+        {% endif %}
 
         <!-- Tabla de productos -->
         <table class="table table-dark table-striped">
@@ -112,6 +114,9 @@
                     <th scope="col">Caducidad del Producto</th>
                     <th scope="col">Precio c/u</th>
                     <th scope="col">Categoría</th>
+                    {% if session.role == 'admin' %}
+                    <th scope="col">Acciones</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -123,6 +128,7 @@
                         <td>{{ producto[3] }}</td>
                         <td>{{ producto[4] }}</td>
                         <td>{{ producto[5] }}</td>
+                        {% if session.role == 'admin' %}
                         <td>
                             <form action="{{ url_for('update1_productos', id_prod=producto[0]) }}" method="POST">
                                 <button type="submit" class="btn btn-edit">Editar</button>
@@ -131,6 +137,7 @@
                         <td>
                             <button type="button" class="btn btn-delete" onclick="showModal('{{ url_for('delete_productos', id_prod=producto[0]) }}')">Eliminar</button>
                         </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>
@@ -168,8 +175,9 @@
         }
 
         function submitForm() {
+            // Redirige a la misma página después de eliminar
             window.location.href = '{{ url_for("productos") }}';
-            return true;
+            return true; // Permite que el formulario se envíe
         }
     </script>
 

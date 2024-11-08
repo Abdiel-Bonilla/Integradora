@@ -2,6 +2,7 @@
 {% block head %}
     {{ super() }}
     {% block title %}Diconsa Web App - Editar Categoría{% endblock %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 {% endblock %}
 
 {% block body %}
@@ -10,57 +11,35 @@
     {% endblock %}
 
     {% block content %}
-    <div class="container">
+    <div class="container mt-4">
         <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card mt-5">
+            <div class="col-md-6">
+                <div class="card">
                     <div class="card-header">
-                        <h2 class="text-center">Editar Categoría</h2>
+                        <h3 class="text-center mb-0">Editar Categoría</h3>
                     </div>
                     <div class="card-body">
-                        <form id="editForm" action="{{ url_for('update2_categoria', id_categ=datos[0]) }}" method="POST" class="needs-validation" novalidate>
+                        {% for categoria in datos %}
+                        <form action="{{ url_for('update2_categoria', id_categ=categoria[0]) }}" method="POST">
                             <div class="form-group">
-                                <label for="nombre">Nombre de la Categoría</label>
-                                <input type="text" class="form-control" id="nombre" name="nombre" 
-                                       value="{{ datos[1] }}" required>
+                                <label for="nombre_ca">Nombre de la categoría</label>
+                                <input type="text" class="form-control" id="nombre_ca" name="nombre_ca" 
+                                       value="{{ categoria[1] }}" required>
                             </div>
-
-                            <div class="form-group text-center">
-                                <button type="button" class="btn btn-success mr-2" onclick="confirmUpdate()">Actualizar</button>
-                                <a href="{{ url_for('categorias') }}" class="btn btn-secondary">Cancelar</a>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Guardar cambios
+                                </button>
+                                <a href="{{ url_for('categorias') }}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </a>
                             </div>
                         </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal de confirmación -->
-        <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Confirmar actualización</h5>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span>&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>¿Estás seguro de que deseas actualizar esta categoría?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-success" onclick="document.getElementById('editForm').submit()">Confirmar</button>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <script>
-        function confirmUpdate() {
-            $('#confirmationModal').modal('show');
-        }
-    </script>
     {% endblock %}
 {% endblock %}

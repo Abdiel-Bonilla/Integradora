@@ -440,36 +440,6 @@ def categorias():
     db.desconectar(conn)
     return render_template('categorias.html', datos=datos)
 
-@app.route('/buscar_categorias', methods=['POST'])
-def buscar_categorias():
-    buscar_texto = request.form['buscar']
-    conn = db.conectar()
-    cursor = conn.cursor()
-    cursor.execute('''
-        SELECT * FROM "Categoria"
-        WHERE nombre_ca ILIKE %s OR id_categ::TEXT ILIKE %s
-    ''', (f'%{buscar_texto}%', f'%{buscar_texto}%'))
-    datos = cursor.fetchall()
-    cursor.close()
-    db.desconectar(conn)
-    return render_template('categorias.html', datos=datos)
-
-@app.route('/delete_categoria/<int:id_categ>', methods=['POST'])
-def delete_categoria(id_categ):
-    conn = db.conectar()
-    cursor = conn.cursor()
-    try:
-        cursor.execute('DELETE FROM "Categoria" WHERE id_categ=%s', (id_categ,))
-        conn.commit()
-        flash('Categoría eliminada exitosamente', 'success')
-    except Exception as e:
-        conn.rollback()
-        flash('No se puede eliminar la categoría porque tiene productos asociados', 'danger')
-    finally:
-        cursor.close()
-        db.desconectar(conn)
-    return redirect(url_for('categorias'))
-
 @app.route('/registrar_categoria', methods=['GET', 'POST'])
 @role_required(['admin'])
 def registrar_categoria():
@@ -494,37 +464,90 @@ def registrar_categoria():
             db.desconectar(conn)
     return render_template('registrar_categoria.html', form=form)
 
+@app.route('/buscar_categorias', methods=['POST'])
+@role_required(['admin'])
+def buscar_categorias():
+    buscar_texto = request.form['buscar']
+    conn = db.conectar()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('''
+            SELECT * FROM "Categoria"
+            WHERE nombre_ca ILIKE %s OR id_categ::TEXT ILIKE %s
+        ''', (f'%{buscar_texto}%', f'%{buscar_texto}%'))
+        datos = cursor.fetchall()
+        return render_template('categorias.html', datos=datos)
+    except Exception as e:
+        flash(f'Error en la búsqueda: {str(e)}', 'danger')
+        return redirect(url_for('categorias'))
+    finally:
+        cursor.close()
+        db.desconectar(conn)
+
 @app.route('/update1_categoria/<int:id_categ>', methods=['POST'])
 @role_required(['admin'])
 def update1_categoria(id_categ):
     conn = db.conectar()
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM "Categoria" WHERE id_categ=%s', (id_categ,))
-    datos = cursor.fetchone()
-    cursor.close()
-    db.desconectar(conn)
-    return render_template('editar_categoria.html', datos=datos)
+    try:
+        # Recuperar la categoría seleccionada
+        cursor.execute('SELECT * FROM "Categoria" WHERE id_categ = %s', (id_categ,))
+        datos = cursor.fetchall()
+        if not datos:
+            flash('Categoría no encontrada', 'danger')
+            return redirect(url_for('categorias'))
+        return render_template('editar_categoria.html', datos=datos)
+    except Exception as e:
+        flash(f'Error al cargar la categoría: {str(e)}', 'danger')
+        return redirect(url_for('categorias'))
+    finally:
+        cursor.close()
+        db.desconectar(conn)
 
 @app.route('/update2_categoria/<int:id_categ>', methods=['POST'])
 @role_required(['admin'])
 def update2_categoria(id_categ):
-    nombre = request.form['nombre']
-    descripcion = request.form['descripcion']
+    nombre_ca = request.form['nombre_ca']
     conn = db.conectar()
     cursor = conn.cursor()
     try:
         cursor.execute('''
             UPDATE "Categoria"
-            SET nombre_ca=%s, descripcion=%s
-            WHERE id_categ=%s
-        ''', (nombre, descripcion, id_categ))
+            SET nombre_ca = %s
+            WHERE id_categ = %s
+        ''', (nombre_ca, id_categ))
         conn.commit()
         flash('Categoría actualizada exitosamente', 'success')
-        return render_template(url_for('categorias'))
     except Exception as e:
         conn.rollback()
         flash(f'Error al actualizar la categoría: {str(e)}', 'danger')
-        return redirect(url_for('update1_categoria', id_categ=id_categ))
     finally:
         cursor.close()
         db.desconectar(conn)
+    return redirect(url_for('categorias'))
+
+@app.route('/delete_categoria/<int:id_categ>', methods=['POST'])
+@role_required(['admin'])
+def delete_categoria(id_categ):
+    conn = db.conectar()
+    cursor = conn.cursor()
+    try:
+        # Primero verificar si hay productos asociados
+        cursor.execute('SELECT COUNT(*) FROM producto WHERE fk_categoria = %s', (id_categ,))
+        count = cursor.fetchone()[0]
+        
+        if count > 0:
+            flash('No se puede eliminar la categoría porque tiene productos asociados', 'danger')
+            return redirect(url_for('categorias'))
+        
+        # Si no hay productos asociados, eliminar la categoría
+        cursor.execute('DELETE FROM "Categoria" WHERE id_categ = %s', (id_categ,))
+        conn.commit()
+        flash('Categoría eliminada exitosamente', 'success')
+    except Exception as e:
+        conn.rollback()
+        flash(f'Error al eliminar la categoría: {str(e)}', 'danger')
+    finally:
+        cursor.close()
+        db.desconectar(conn)
+    return redirect(url_for('categorias'))

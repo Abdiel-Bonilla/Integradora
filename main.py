@@ -526,28 +526,20 @@ def update2_categoria(id_categ):
         db.desconectar(conn)
     return redirect(url_for('categorias'))
 
-@app.route('/delete_categoria/<int:id_categ>', methods=['POST'])
-@role_required(['admin'])
-def delete_categoria(id_categ):
+@app.route('/eliminar_categoria/<int:id_categ>', methods=['POST'])
+@role_required(['admin'])  # Solo los administradores pueden eliminar categorías
+def eliminar_categoria(id_categ):
     conn = db.conectar()
     cursor = conn.cursor()
     try:
-        # Primero verificar si hay productos asociados
-        cursor.execute('SELECT COUNT(*) FROM producto WHERE fk_categoria = %s', (id_categ,))
-        count = cursor.fetchone()[0]
-        
-        if count > 0:
-            flash('No se puede eliminar la categoría porque tiene productos asociados', 'danger')
-            return redirect(url_for('categorias'))
-        
-        # Si no hay productos asociados, eliminar la categoría
+        # Eliminar la categoría de la base de datos
         cursor.execute('DELETE FROM "Categoria" WHERE id_categ = %s', (id_categ,))
         conn.commit()
         flash('Categoría eliminada exitosamente', 'success')
     except Exception as e:
         conn.rollback()
-        flash(f'Error al eliminar la categoría: {str(e)}', 'danger')
+        flash(f'Error al eliminar la categoría: {e}', 'danger')
     finally:
         cursor.close()
         db.desconectar(conn)
-    return redirect(url_for('categorias'))
+    return redirect(url_for('categorias'))  # Redirigir a la página de categorías después de eliminar

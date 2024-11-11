@@ -2,7 +2,7 @@
 {% block head %}
     {{ super() }}
     {% block title %}Diconsa Web App - Editar Categoría{% endblock %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../static/style.css">
 {% endblock %}
 
 {% block body %}
@@ -23,7 +23,7 @@
                         <form action="{{ url_for('update2_categoria', id_categ=categoria[0]) }}" method="POST">
                             <div class="form-group">
                                 <label for="nombre_ca">Nombre de la categoría</label>
-                                <input type="text" class="form-control" id="nombre_ca" name="nombre_ca" 
+                                <input type="text" class="form-control" id="nombre_ca" name="nombre_ca"
                                        value="{{ categoria[1] }}" required>
                             </div>
                             <div class="text-center">
